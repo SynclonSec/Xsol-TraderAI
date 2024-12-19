@@ -1,7 +1,9 @@
-
 #include "amr.h"
 #include <algorithm>
 #include <stdexcept>
+#include <numeric>
+#include <iostream>
+#include <fstream>
 
 namespace xsol {
 namespace math {
@@ -32,7 +34,7 @@ AdaptiveMeshRefinement::refineMesh(
     // Refine mesh levels
     for (size_t level = 0; level < m_config.maxLevels - 1; ++level) {
         bool needsMoreRefinement = false;
-        
+
         // Compute errors and mark points for refinement
         for (auto& point : m_meshLevels[level]) {
             point.error = computeLocalError(point, errorEstimator);
@@ -67,7 +69,7 @@ AdaptiveMeshRefinement::refineMesh(
 
 void AdaptiveMeshRefinement::adaptResources(
     const std::vector<double>& activityMetrics) {
-    
+
     double totalActivity = std::accumulate(
         activityMetrics.begin(), 
         activityMetrics.end(), 
@@ -137,6 +139,37 @@ void AdaptiveMeshRefinement::refineRegion(
         refinedPoints.begin(),
         refinedPoints.end()
     );
+}
+
+void AdaptiveMeshRefinement::logMeshState(const std::string& filename) {
+    std::ofstream logFile(filename);
+    if (!logFile.is_open()) {
+        throw std::runtime_error("Unable to open log file");
+    }
+
+    for (size_t level = 0; level < m_meshLevels.size(); ++level) {
+        logFile << "Level " << level << ":\n";
+        for (const auto& point : m_meshLevels[level]) {
+            logFile << "Value: " << point.value << ", Error: " << point.error 
+                    << ", Needs Refinement: " << (point.needsRefinement ? "Yes" : "No") << "\n";
+        }
+        logFile << "\n";
+    }
+
+    logFile.close();
+}
+
+void AdaptiveMeshRefinement::visualizeMesh() const {
+    // Placeholder for mesh visualization logic
+    // This could involve generating a plot or other visual representation
+    for (size_t level = 0; level < m_meshLevels.size(); ++level) {
+        std::cout << "Level " << level << ":\n";
+        for (const auto& point : m_meshLevels[level]) {
+            std::cout << "Value: " << point.value << ", Error: " << point.error 
+                      << ", Needs Refinement: " << (point.needsRefinement ? "Yes" : "No") << "\n";
+        }
+        std::cout << "\n";
+    }
 }
 
 } // namespace math
