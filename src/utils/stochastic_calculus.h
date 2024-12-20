@@ -1,59 +1,49 @@
+#ifndef STOCHASTIC_CALCULUS_H
+#define STOCHASTIC_CALCULUS_H
 
-#pragma once
-
+#include <functional>
+#include <iostream>
 #include <vector>
-#include <random>
 #include <cmath>
+#include <random>
 
-namespace xsol {
-namespace math {
+typedef std::vector<double> (*SDEFunction)(double, const std::vector<double>&);
 
 class StochasticCalculus {
 public:
-    struct BrownianMotion {
-        double drift;
-        double volatility;
-        std::vector<double> path;
-        double timeStep;
-    };
+    StochasticCalculus(double dt);
 
-    struct HestonParameters {
-        double kappa;    // Mean reversion speed
-        double theta;    // Long-run variance
-        double sigma;    // Volatility of variance
-        double rho;      // Correlation
-        double v0;       // Initial variance
-    };
-
-    StochasticCalculus(unsigned seed = std::random_device{}());
-
-    // Generate Brownian motion path
-    BrownianMotion generateBrownianMotion(
-        double T,           // Time horizon
-        size_t steps,       // Number of steps
-        double drift = 0.0, // Drift term
-        double vol = 1.0    // Volatility
-    );
-
-    // Implement Heston stochastic volatility model
-    std::vector<double> simulateHestonModel(
-        const HestonParameters& params,
-        double S0,    // Initial price
-        double T,     // Time horizon
-        size_t steps  // Number of steps
-    );
-
-    // Calculate Ito integral
-    double calculateItoIntegral(
-        const std::vector<double>& process,
-        const std::vector<double>& integrand,
-        double dt
-    );
+    std::vector<double> generateBrownianMotion(double t0, double tf, double initialValue);
+    std::vector<double> simulateStochasticProcess(double t0, double tf, const std::vector<double>& y0,
+                                                  SDEFunction drift, SDEFunction diffusion);
+    double calculateExpectation(std::function<double(const std::vector<double>&)> func,
+                                const std::vector<std::vector<double>>& samples);
+    std::vector<std::vector<double>> generateSamples(double t0, double tf, const std::vector<double>& y0,
+                                                     SDEFunction drift, SDEFunction diffusion, int numSamples);
+    double calculateVariance(std::function<double(const std::vector<double>&)> func,
+                              const std::vector<std::vector<double>>& samples);
+    double calculateCovariance(std::function<double(const std::vector<double>&)> func1,
+                                std::function<double(const std::vector<double>&)> func2,
+                                const std::vector<std::vector<double>>& samples);
+    double calculateCorrelation(std::function<double(const std::vector<double>&)> func1,
+                                std::function<double(const std::vector<double>&)> func2,
+                                const std::vector<std::vector<double>>& samples);
+    std::vector<double> generateGeometricBrownianMotion(double t0, double tf, double initialValue, double mu, double sigma);
+    std::vector<double> generateOrnsteinUhlenbeckProcess(double t0, double tf, double initialValue, double theta, double mu, double sigma);
+    std::vector<int> generatePoissonProcess(double t0, double tf, double lambda);
 
 private:
-    std::mt19937_64 m_rng;
-    std::normal_distribution<double> m_normalDist;
+    double dt;
+    std::mt19937 generator;
+
+    std::vector<double> addVectors(const std::vector<double>& a, const std::vector<double>& b);
+    std::vector<double> scaleVector(const std::vector<double>& v, double scalar);
+    double generateBrownianIncrement();
+    std::vector<double> generateBrownianIncrementVector(size_t size);
 };
 
-} // namespace math
-} // namespace xsol
+std::vector<double> driftFunction(double t, const std::vector<double>& y);
+std::vector<double> diffusionFunction(double t, const std::vector<double>& y);
+double exampleFunction(const std::vector<double>& y);
+
+#endif // STOCHASTIC_CALCULUS_H
