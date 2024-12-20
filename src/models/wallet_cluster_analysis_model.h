@@ -5,8 +5,7 @@
 #include <string>
 #include <map>
 #include <memory>
-#include "../include/solana_framework.h"
-#include "../utils/graph_theory.h"
+#include "../solana/solana_framework.h"
 
 namespace xsol {
 
