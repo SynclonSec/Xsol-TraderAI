@@ -6,6 +6,7 @@
 #include <map>
 #include <memory>
 #include "../include/solana_framework.h"
+#include "../utils/graph_theory.h"
 
 namespace xsol {
 
@@ -36,10 +37,19 @@ public:
         double significanceThreshold;
     };
 
-    WalletClusterAnalysisModel(const AnalysisConfig& config);
-    ~WalletClusterAnalysisModel();
-
+/*
+ * WalletClusterAnalysisModel::WalletClusterAnalysisModel(
+    const AnalysisConfig& config)
+    : m_config(config), pImpl(std::make_unique<Impl>()) {}
+*/
+    WalletClusterAnalysisModel(const AnalysisConfig& config, const size_t n)
+        : m_config(config), pImpl(std::make_unique<Impl>(n)) {}
+//   WalletClusterAnalysisModel(const AnalysisConfig& config);
+//    ~WalletClusterAnalysisModel();
     // Analyze wallet clusters and return metrics
+
+   ~WalletClusterAnalysisModel() = default;
+
     ClusterMetrics analyzeClusters(
         const std::vector<std::string>& addresses,
         const std::vector<SolanaFramework::Transaction>& transactions
@@ -54,7 +64,21 @@ public:
     void updateConfig(const AnalysisConfig& newConfig);
 
 private:
-    struct Impl;
+	struct Impl {
+        std::map<std::string, WalletNode> walletGraph;
+        std::vector<std::vector<std::string>> clusters;
+        graph::AdjacencyMatrix transactionMatrix;
+        double totalVolume;
+
+	Impl(size_t n) : totalVolume(0.0), transactionMatrix(n) {}
+
+        void reset() {
+            walletGraph.clear();
+            clusters.clear();
+            transactionMatrix.clear();
+            totalVolume = 0.0;
+        }
+    };
     std::unique_ptr<Impl> pImpl;
     AnalysisConfig m_config;
 
