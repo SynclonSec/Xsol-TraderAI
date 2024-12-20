@@ -1,8 +1,4 @@
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <random>
-#include <functional>
+#include "stochastic_calculus.h"
 
 typedef std::vector<double> (*SDEFunction)(double, const std::vector<double>&);
 
