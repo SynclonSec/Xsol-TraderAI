@@ -1,3 +1,4 @@
+#include "euler.h"
 #include <iostream>
 #include <vector>
 #include <complex>
