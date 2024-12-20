@@ -5,7 +5,6 @@
 #include <vector>
 #include <memory>
 #include <cstdint>
-#include "solana/rpc.hpp" // Solana C++ SDK
 #include "mathematical_tools.h"
 
 namespace xsol {

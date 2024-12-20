@@ -5,29 +5,9 @@
 #include <numeric>
 #include <set>
 #include <queue>
-#include "../utils/graph_theory.h"
 
 namespace xsol {
 
-struct WalletClusterAnalysisModel::Impl {
-    std::map<std::string, WalletNode> walletGraph;
-    std::vector<std::vector<std::string>> clusters;
-    graph::AdjacencyMatrix transactionMatrix;
-    double totalVolume;
-    
-    void reset() {
-        walletGraph.clear();
-        clusters.clear();
-        transactionMatrix.clear();
-        totalVolume = 0.0;
-    }
-};
-
-WalletClusterAnalysisModel::WalletClusterAnalysisModel(
-    const AnalysisConfig& config)
-    : m_config(config), pImpl(std::make_unique<Impl>()) {}
-
-WalletClusterAnalysisModel::~WalletClusterAnalysisModel() = default;
 
 void WalletClusterAnalysisModel::buildTransactionGraph(
     const std::vector<SolanaFramework::Transaction>& transactions) {
@@ -94,7 +74,7 @@ double WalletClusterAnalysisModel::calculateWalletInfluence(
            0.3 * balanceWeight;
 }
 
-std::vector<std::vector<WalletNode>> 
+std::vector<std::vector<WalletClusterAnalysisModel::WalletNode>> 
 WalletClusterAnalysisModel::detectCommunities(
     const std::vector<WalletNode>& wallets) {
     
