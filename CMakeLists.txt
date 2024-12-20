@@ -73,11 +73,12 @@ install(TARGETS xsol_trader_ai
 
 # Testing
 enable_testing()
-add_subdirectory(tests)
-
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+    add_subdirectory(tests)
+endif()
 # Documentation
 find_package(Doxygen)
-if(DOXYGEN_FOUND)
+if(DOXYGEN_FOUND AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/docs")
     add_subdirectory(docs)
 endif()
 
