@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <numeric>
 #include <chrono>
+#include <omp.h>
 
 void log(const std::string& message) {
     std::ofstream logFile("fractional_laplacian.log", std::ios_base::app);
@@ -27,14 +28,16 @@ std::vector<double> fractionalLaplacian(const std::vector<double>& u, double alp
         throw std::invalid_argument("alpha must be in the range (0, 2).");
     }
 
+    #pragma omp parallel for
     for (int i = 0; i < N; ++i) {
+        double sum = 0.0;
         for (int j = 0; j < N; ++j) {
             if (i != j) {
                 double diff = std::abs(i - j) * h;
-                result[i] += (u[i] - u[j]) / std::pow(diff, 1 + alpha);
+                sum += (u[i] - u[j]) / std::pow(diff, 1 + alpha);
             }
         }
-        result[i] *= -std::tgamma(2 - alpha) / (2 * std::tgamma((1 - alpha) / 2) * std::tgamma((1 + alpha) / 2));
+        result[i] = sum * -std::tgamma(2 - alpha) / (2 * std::tgamma((1 - alpha) / 2) * std::tgamma((1 + alpha) / 2));
     }
 
     return result;
@@ -108,14 +111,16 @@ std::vector<double> fractionalDerivative(const std::vector<double>& u, double al
         throw std::invalid_argument("alpha must be in the range (0, 1) for fractional derivatives.");
     }
 
+    #pragma omp parallel for
     for (int i = 0; i < N; ++i) {
+        double sum = 0.0;
         for (int j = 0; j < N; ++j) {
             if (i != j) {
                 double diff = std::abs(i - j) * h;
-                result[i] += (u[i] - u[j]) / std::pow(diff, alpha);
+                sum += (u[i] - u[j]) / std::pow(diff, alpha);
             }
         }
-        result[i] *= std::tgamma(1 - alpha);
+        result[i] = sum * std::tgamma(1 - alpha);
     }
 
     return result;
@@ -130,14 +135,16 @@ std::vector<double> fractionalIntegral(const std::vector<double>& u, double alph
         throw std::invalid_argument("alpha must be in the range (0, 1) for fractional integrals.");
     }
 
+    #pragma omp parallel for
     for (int i = 0; i < N; ++i) {
+        double sum = 0.0;
         for (int j = 0; j < N; ++j) {
             if (i != j) {
                 double diff = std::abs(i - j) * h;
-                result[i] += (u[i] - u[j]) * std::pow(diff, alpha - 1);
+                sum += (u[i] - u[j]) * std::pow(diff, alpha - 1);
             }
         }
-        result[i] *= std::tgamma(alpha);
+        result[i] = sum * std::tgamma(alpha);
     }
 
     return result;
@@ -152,14 +159,16 @@ std::vector<double> fractionalDiffusion(const std::vector<double>& u, double alp
         throw std::invalid_argument("alpha must be in the range (0, 2) for fractional diffusion.");
     }
 
+    #pragma omp parallel for
     for (int i = 0; i < N; ++i) {
+        double sum = 0.0;
         for (int j = 0; j < N; ++j) {
             if (i != j) {
                 double diff = std::abs(i - j) * h;
-                result[i] += (u[i] - u[j]) / std::pow(diff, 1 + alpha);
+                sum += (u[i] - u[j]) / std::pow(diff, 1 + alpha);
             }
         }
-        result[i] *= -std::tgamma(2 - alpha) / (2 * std::tgamma((1 - alpha) / 2) * std::tgamma((1 + alpha) / 2)) * dt;
+        result[i] = sum * -std::tgamma(2 - alpha) / (2 * std::tgamma((1 - alpha) / 2) * std::tgamma((1 + alpha) / 2)) * dt;
     }
 
     return result;
@@ -262,4 +271,3 @@ int main() {
 
     return 0;
 }
-
