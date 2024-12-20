@@ -20,7 +20,7 @@ void log(const std::string& message) {
 }
 
 std::vector<double> fractionalLaplacian(const std::vector<double>& u, double alpha, double h) {
-    int N = u.size();
+    int N = u.size();   
     std::vector<double> result(N, 0.0);
 
     if (alpha <= 0 || alpha >= 2) {
