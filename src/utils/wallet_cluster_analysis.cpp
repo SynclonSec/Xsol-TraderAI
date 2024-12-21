@@ -1,12 +1,4 @@
-#include <iostream>
-#include <vector>
-#include <cmath>
-#include <stdexcept>
-#include <algorithm>
-#include <random>
-#include <limits>
-#include <numeric>
-#include <set>
+#include "wallet_cluster_analysis.cpp"
 
 // Define a Point class to represent data points
 class Point {
