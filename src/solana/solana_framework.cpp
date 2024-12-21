@@ -50,11 +50,9 @@ namespace xsol
         return true;
     }
 
-    bool SolanaFramework::executeTransaction(const Transaction &tx)
+    bool SolanaFramework::executeOrder(const Order &order)
     {
-        // Execute the transaction using the Solana SDK
-        // Example: return solana::rpc::sendTransaction(tx.signature, tx.from, tx.to, tx.amount, tx.programId);
-        std::cout << "Executing transaction from " << tx.from << " to " << tx.to << " amount " << tx.amount << std::endl;
+        // Execute an order
         return true;
     }
 

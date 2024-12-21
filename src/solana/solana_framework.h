@@ -28,15 +28,24 @@ public:
         std::string programId;
     };
 
+    struct Order {
+        enum class Action { BUY, SELL };
+        Action action;
+        double quantity;
+        double price;
+        double acceptableSlippage;
+        std::string market;
+    };
+
     SolanaFramework();
     ~SolanaFramework();
 
     bool initializeSolanaConnection(const std::string& endpoint);
-    bool executeTransaction(const Transaction& tx);
     MarketData getMarketData(const std::string& market);
     double getAccountBalance(const std::string& address);
     std::vector<Transaction> getRecentTransactions(const std::string& address, uint32_t limit = 10);
 
+    bool executeOrder(const Order& order);
 private:
     struct Impl;
     std::unique_ptr<Impl> pImpl; // PIMPL idiom for ABI stability
